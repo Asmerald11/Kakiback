@@ -20,12 +20,15 @@ const crearUsuario = async (req, res = express.response) => {
 
         usuario = new Usuario(req.body);
 
+        salt = bcrypt.genSaltSync();
+        usuario.password = bcrypt.hashSync(password, salt);
+
         await usuario.save();
 
         res.status(201).json({
             message: 'Usuario creado.',
             user: { name, email, password },
-            uid: usuario.id
+            uid: usuario.id,
         }
         );
 
@@ -56,8 +59,6 @@ const userLogin = async (req, res) => {
                 message: "Contraseña incorrecta"
             })
         }
-
-        const token = await generarToken(usuario.id, usuario.name);
 
         res.status(200).json({
             message: 'Bienvenido',
